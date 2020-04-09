@@ -5,7 +5,7 @@ def sigmoid(z):
     return (1 + np.exp(-z))**-1
 
 # thetas: lista de matrices de transicion
-# @return: lista de matrices aplanadas (arrays) y lista de tuplas de las shapes de matrices originales
+# @return: array de matrices aplanadas y concatenadas y lista de tuplas de las shapes de matrices originales
 def flatten_matrixes(thetas):
     flat_thetas = []
     shapes = [] # para guardar las shapes originales
@@ -14,6 +14,7 @@ def flatten_matrixes(thetas):
         flat_thetas = [*flat_thetas, *(matrix.flatten())]
     return np.array(flat_thetas).flatten(), shapes
 
+# 
 # flat matrixes: array con matrices aplastadas y concatenadas
 # shape: lista de tuplas de dimensiones de cada matriz original
 # @return: lista de matrices infladas
@@ -55,36 +56,27 @@ def feed_forward(thetas, x):
 def back_propagation(f_thetas, shapes, X, Y):
     m, layers = len(X), len(shapes) + 1
     thetas = inflate_matrixes(f_thetas, shapes)
-    # [1]
-    gradient = []
-    for mat in thetas:
-        gradient.append(np.zeros_like(mat)) 
      # [2.2]
     a = feed_forward(thetas, X)
     # lista de errores [2.3]
     deltas = [*range(layers -1), a[-1] - Y] 
     # [2.4]
-    for i in range(layers-1, 0, -1): # loop desde la ultima capa hasta la segunda (en reversa)
+    for i in range(layers-2, 0, -1): # loop desde la ultima capa hasta la segunda (en reversa)
         deltas[i] = np.matmul(
             thetas[i],
             deltas[i+1]
         ) * (a[i] * (1 - a[i]))
     # [2.5] 
-    for i in range(layers -1, -1, -1): # loop de capa 0 a capa L-1
-        gradient[i] = ((np.matmul(deltas[i+1], a[i].T))/m)
+    gradient = []
+    for i in range(layers -2, -1, -1): # loop de capa 0 a capa L-1
+        gradient.append((np.matmul(deltas[i+1], a[i].T))/m)
     return flatten_matrixes(gradient)
-
-#debe devolver resultados flat (matrices aplanadas)
-
-#dividir entradas /3, el resultada en una sola capa oculta. 
-
-# overfit -> se quita neuronas
 
 #   Funcion costo 
 # flat_thetas: lista de matrices de transicion aplanadas en una dimension
 # shapes: lista de tuplas de shapes de cada matriz original
 # X: matriz de datos de entrenamiento (entrada de NN)
-# Y: vector que contiene los vectores reales de cada neurona en la capa final
+# Y: matriz que contiene los valores reales de cada neurona (para cada dato) en la capa final. Tiene forma m(#datos)x n(#clases/neuronas en capa final)
 def nn_cost(flat_thetas, shapes, X, Y):
     # obtener predicciones 
     a = feed_forward(
