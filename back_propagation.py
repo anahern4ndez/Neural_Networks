@@ -8,11 +8,11 @@ def sigmoid(z):
 # @return: array de matrices aplanadas y concatenadas y lista de tuplas de las shapes de matrices originales
 def flatten_matrixes(thetas):
     flat_thetas = []
-    shapes = [] # para guardar las shapes originales
+    # shapes = [] # para guardar las shapes originales
     for matrix in thetas:
-        shapes.append(matrix.shape)
+        # shapes.append(matrix.shape)
         flat_thetas = [*flat_thetas, *(matrix.flatten())]
-    return np.array(flat_thetas).flatten(), shapes
+    return np.array(flat_thetas).flatten()
 
 # 
 # flat matrixes: array con matrices aplastadas y concatenadas
@@ -34,7 +34,7 @@ def inflate_matrixes(flat_matrixes, shapes):
 # @return: lista de vectores de activacion de cada capa
 def feed_forward(thetas, x):
     a = [x] # [2.1], primera activacion
-    for i in range(len(thetas) +1 ): #iteracion sobre capas
+    for i in range(len(thetas)): #iteracion sobre capas
         a.append(
             sigmoid(
                 np.matmul(
@@ -55,22 +55,49 @@ def feed_forward(thetas, x):
 # @return: lista de gradientes 
 def back_propagation(f_thetas, shapes, X, Y):
     m, layers = len(X), len(shapes) + 1
+    print(layers)
     thetas = inflate_matrixes(f_thetas, shapes)
      # [2.2]
     a = feed_forward(thetas, X)
     # lista de errores [2.3]
-    deltas = [*range(layers -1), a[-1] - Y] 
+    deltas = [ *range(layers -1), a[-1] - Y ] 
+    # print(deltas)
+    # for d in deltas:
+    #     print(d.shape)
+    print("thetas shapes\n")
+    for t in thetas:
+        print(t.shape)
     # [2.4]
     for i in range(layers-2, 0, -1): # loop desde la ultima capa hasta la segunda (en reversa)
         deltas[i] = np.matmul(
-            thetas[i],
-            deltas[i+1]
+            deltas[i+1],
+            (thetas[i])[:, :thetas[i].shape[1]-1] # a theta se le quita el bias
         ) * (a[i] * (1 - a[i]))
     # [2.5] 
+    print("deltas\n")
+    for d in deltas:
+        try:
+            print(d.shape)
+        except:
+            print('')
+    print("a_s:\n")
+    for a_s in a:
+        print(a_s.shape)
     gradient = []
-    for i in range(layers -2, -1, -1): # loop de capa 0 a capa L-1
-        gradient.append((np.matmul(deltas[i+1], a[i].T))/m)
-    return flatten_matrixes(gradient)
+    for i in range(layers-2, -1, -1): # loop de capa 0 a capa L-1
+        print(i)
+        print("d[i+1] shape ", deltas[i+1].shape)
+        # print("theta[i] shape ", thetas[i][:, :thetas[i].shape[1]-1].shape)
+        print("a[i] shape ", a[i].shape)
+        gradient.append((np.matmul(
+            deltas[i+1].T, 
+            np.hstack((
+                        np.ones(len(a[i])).reshape(len(a[i]), 1),
+                        a[i]
+                    ))
+        ))/m)
+    #return flatten_matrixes(gradient)
+    return gradient
 
 #   Funcion costo 
 # flat_thetas: lista de matrices de transicion aplanadas en una dimension
