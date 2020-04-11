@@ -11,6 +11,18 @@ def get_accuracy(prediction, theorical):
             hits += 1
     return hits / data
 
+# prediction: matriz con las predicciones resultantes de feed_forward
+# theorical: vector que contiene los valores teoricos
+# @return: array (dim 10) conteniendo el accuracy por clase 
+def get_accuracy_by_class(prediction, theorical):
+    hits, instances, data = np.zeros((10,)), np.zeros((10,)), theorical.shape[0]
+    for i in range(data):
+        instances[theorical[i]] += 1.0
+        if(theorical[i] == np.argmax(prediction[i])):
+            # print(theorical[i])
+            hits[theorical[i]] += 1.0
+    return np.ndarray.tolist(hits / instances)
+
 # z: matmul entre vector x y matriz theta
 def sigmoid(z):
     return 1.0/(1 + np.exp(-z))

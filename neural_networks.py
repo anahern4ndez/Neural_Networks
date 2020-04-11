@@ -23,7 +23,8 @@ start = time.time()
 X_train, y_train = mnist_reader.load_mnist('data/', kind='train')
 X_test, y_test = mnist_reader.load_mnist('data/', kind='t10k')
 
-print('y_train shape: ', y_train.shape)
+
+#           TRAINING 
 
 X = X_train / 255.0
 m,n = X.shape
@@ -65,16 +66,8 @@ print("Optimized!")
 
 
 # calculo de porcentaje de error  
-# result_thetas = inflate_matrixes(flat_thetas, theta_shapes_list)
-# prediction = feed_forward(result_thetas, X)[-1]
-# percentage = error_percentage(prediction, y_train)
-
 result_thetas = inflate_matrixes(result.x, theta_shapes_list)
-# print('res thetas: \n', result_thetas)
-# print('len res thetas: ', len(result_thetas))
-print('shapes res thetas: ', result_thetas[0].shape, result_thetas[1].shape)
 prediction = feed_forward(result_thetas, X)[-1]
-print('prediction: \n', prediction)
 percentage = get_accuracy(prediction, y_train)
 
 print("ACCURACY: ", percentage)
@@ -86,3 +79,21 @@ model_file.close()
 
 end = time.time()
 print("TIEMPO DE EJECUCION: {}s".format(end-start))
+
+#           TESTING 
+X = X_test / 255.0
+m,n = X.shape
+HIDDEN_LAYER = 90 # Cantidad de neuronas en la capa oculta
+FINAL_LAYER = 10 # cantidad de neuronas en la capa final 
+
+theta_shapes = np.array([
+    [ HIDDEN_LAYER, n+1 ],
+    [ FINAL_LAYER, HIDDEN_LAYER+1 ]
+])
+theta_shapes_list = [(HIDDEN_LAYER, n+1), (FINAL_LAYER, HIDDEN_LAYER+1)]
+
+# calculo de porcentaje de error  
+result_thetas = inflate_matrixes(result.x, theta_shapes_list)
+prediction = feed_forward(result_thetas, X)[-1]
+percentage = get_accuracy(prediction, y_test)
+print("TESTING ACCURACY: ", percentage)
