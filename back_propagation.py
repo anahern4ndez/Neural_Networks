@@ -3,16 +3,17 @@ import math
 
 # prediction: matriz con las predicciones resultantes de feed_forward
 # theorical: vector que contiene los valores teoricos  
-def error_percentage(prediction, theorical):
+def get_accuracy(prediction, theorical):
     hits, data = 0, theorical.shape[0]
     for i in range(data):
+        # print(theorical[i], np.argmax(prediction[i]))
         if(theorical[i] == np.argmax(prediction[i])):
             hits += 1
     return hits / data
 
 # z: matmul entre vector x y matriz theta
 def sigmoid(z):
-    return (1.0 + np.exp(-z))**-1.0
+    return 1.0/(1 + np.exp(-z))
 
 
 # thetas: lista de matrices de transicion
@@ -43,8 +44,8 @@ def inflate_matrixes(flat_matrixes, shapes):
 # thetas: lista de todas las matrices de transicion
 # x: matriz de training values (primera capa)
 # @return: lista de vectores de activacion de cada capa
-def feed_forward(thetas, x):
-    a = [x] # [2.1], primera activacion
+def feed_forward(thetas, X):
+    a = [X] # [2.1], primera activacion
     for i in range(len(thetas)): #iteracion sobre capas
         a.append(
             sigmoid(
@@ -75,7 +76,7 @@ def back_propagation(f_thetas, shapes, X, Y):
     for i in range(layers-2, 0, -1): # loop desde la ultima capa hasta la segunda (en reversa)
         deltas[i] = np.matmul(
             deltas[i+1],
-            (thetas[i])[:, :thetas[i].shape[1]-1] # a theta se le quita el bias
+            (thetas[i])[:, 1:] # a theta se le quita el bias
         ) * (a[i] * (1 - a[i]))
     # [2.5] 
     gradient = []
@@ -86,8 +87,8 @@ def back_propagation(f_thetas, shapes, X, Y):
                         np.ones(len(a[i])).reshape(len(a[i]), 1),
                         a[i]
                     ))
-        )) / (m))
-    return flatten_matrixes(np.asarray(gradient))
+        )) / m)
+    return flatten_matrixes(gradient)
 
 #   Funcion costo 
 # flat_thetas: lista de matrices de transicion aplanadas en una dimension
@@ -100,4 +101,4 @@ def nn_cost(flat_thetas, shapes, X, Y):
         inflate_matrixes(flat_thetas, shapes),
         X
     )
-    return -(Y * np.log(a[-1]) + (1 - Y) * np.log(1.0 - a[-1])).sum() / len(X)
+    return -(Y * np.log(a[-1]) + (1 - Y) * np.log(1 - a[-1])).sum() / len(X)
