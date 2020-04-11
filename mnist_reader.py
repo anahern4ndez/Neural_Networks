@@ -1,3 +1,11 @@
+'''
+    Train and dataset reader for fashion-mnist. 
+
+    Copyright © Han Xiao, Kashif Rasul, Roland Vollgraf.
+    Extracted from: https://github.com/zalandoresearch/fashion-mnist
+    
+'''
+
 def load_mnist(path, kind='train'):
     import os
     import gzip

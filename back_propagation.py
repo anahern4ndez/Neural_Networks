@@ -1,12 +1,16 @@
+'''
+    Ana Lucia Hernandez - 17138. 
+    8 de abril del 2020.
+    Módulo con definición de funciones necesarias para la implementación de una red neuronal. 
+
+'''
 import numpy as np
-import math
 
 # prediction: matriz con las predicciones resultantes de feed_forward
 # theorical: vector que contiene los valores teoricos  
 def get_accuracy(prediction, theorical):
     hits, data = 0, theorical.shape[0]
     for i in range(data):
-        # print(theorical[i], np.argmax(prediction[i]))
         if(theorical[i] == np.argmax(prediction[i])):
             hits += 1
     return hits / data
@@ -19,7 +23,6 @@ def get_accuracy_by_class(prediction, theorical):
     for i in range(data):
         instances[theorical[i]] += 1.0
         if(theorical[i] == np.argmax(prediction[i])):
-            # print(theorical[i])
             hits[theorical[i]] += 1.0
     return np.ndarray.tolist(hits / instances)
 
@@ -32,13 +35,10 @@ def sigmoid(z):
 # @return: array de matrices aplanadas y concatenadas y lista de tuplas de las shapes de matrices originales
 def flatten_matrixes(thetas):
     flat_thetas = []
-    # shapes = [] # para guardar las shapes originales
     for matrix in thetas:
-        # shapes.append(matrix.shape)
         flat_thetas = [*flat_thetas, *(matrix.flatten())]
     return np.array(flat_thetas).flatten()
 
-# 
 # flat matrixes: array con matrices aplastadas y concatenadas
 # shape: lista de tuplas de dimensiones de cada matriz original
 # @return: lista de matrices infladas

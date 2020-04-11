@@ -1,5 +1,6 @@
 '''
     Ana Lucia Hernandez - 17138. 
+    9 de abril del 2020.
     Programa main para ejecucion de red neuronal usando el dataset "fashion-mnist"
 
 '''
